@@ -11,7 +11,7 @@ namespace ServiceRegistryModules;
 /// <inheritdoc/>
 public abstract class AbstractRegistryModule : IRegistryModule {
     /// <inheritdoc/>
-    public virtual IReadOnlyCollection<string> TargetEnvironments => Array.Empty<string>();
+    public virtual IReadOnlyCollection<string> TargetEnvironments => [];
     /// <inheritdoc/>
     public virtual int Priority => 0;
     /// <inheritdoc/>

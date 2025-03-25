@@ -13,16 +13,15 @@ internal class RegistryActivator : IRegistryActivator {
         }
 
         var createdRegistries = !typesToCreate.Any()
-            ? Enumerable.Empty<IRegistryModule>()
+            ? []
             : typesToCreate.Select(t => FindConstructorWithArgsThatSatisfy(t, options.AllowedRegistryCtorArgTypes) is { } ctor
                     ? CreateRegistryInstance(ctor, options)
                     : throw new RegistryActivationException($"Unable to activate {nameof(IRegistryModule)} of type '{t.Name}' " +
                     $"-- no suitable constructor found. " +
                     $"Allowable constructor parameters are: {string.Join(", ", options.AllowedRegistryCtorArgTypes)}"));
 
-        return createdRegistries.Concat(options.Registries)
-            .OrderByDescending(m => m.Priority)
-            .ToArray();
+        return [.. createdRegistries.Concat(options.Registries)
+            .OrderByDescending(m => m.Priority)];
     }
 
     private bool IsTypePublic(Type type) {

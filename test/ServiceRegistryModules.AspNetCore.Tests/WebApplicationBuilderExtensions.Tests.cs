@@ -23,16 +23,16 @@ public class WebApplicationBuilderExtensions_Should {
         expectedOptions.RegistryConfigSectionKey = ServiceRegistryModulesDefaults.REGISTRIES_KEY;
         expectedOptions.PublicOnly = false;
         expectedOptions.RegistryTypes.Add(typeof(TestRegistry1));
-        expectedOptions.Providers.AddRange(new object[] {
+        expectedOptions.Providers.AddRange([
             services.Environment,
             services.Configuration
-        });
-        expectedOptions.AllowedRegistryCtorArgTypes.AddRange(new[] {
+        ]);
+        expectedOptions.AllowedRegistryCtorArgTypes.AddRange([
             typeof(IHostEnvironment),
             services.Environment.GetType(),
             typeof(IConfiguration),
             services.Configuration.GetType()
-        });
+        ]);
         expectedOptions.Configuration = services.Configuration;
         expectedOptions.Environment = services.Environment;
 

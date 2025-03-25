@@ -10,6 +10,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceRegistryModules.Abstractions", "ServiceRegistryModules.Abstractions\ServiceRegistryModules.Abstractions.csproj", "{F273D70A-65C0-4CA2-ADEE-1F3AF73998EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B7FC3187-2637-4E70-A3F5-5A72B24A12D8}"
+	ProjectSection(SolutionItems) = preProject
+		..\test\.editorconfig = ..\test\.editorconfig
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceRegistryModules.Core.Internal.Tests", "..\test\ServiceRegistryModules.Core.Internal.Tests\ServiceRegistryModules.Core.Internal.Tests.csproj", "{B8204E7E-F657-469D-BAAA-E7B85E801485}"
 EndProject
@@ -26,6 +29,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSamples4", "..\test\SampleProjects\TestSamples4\TestSamples4.csproj", "{D867B92B-AC13-4218-99EC-E80B0D770250}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnreferencedTestSamples", "..\test\SampleProjects\UnreferencedTestSamples\UnreferencedTestSamples.csproj", "{26E4285F-84DA-46B6-8750-9C01D25FF453}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\Directory.Build.props = ..\Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

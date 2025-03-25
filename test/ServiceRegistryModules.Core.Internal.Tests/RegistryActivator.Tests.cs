@@ -15,15 +15,15 @@ public class RegistryActivator_Should {
         // Arrange
         var service = CreateService();
         var options = CreateOptions(
-            registryTypes: new[] {
+            registryTypes: [
                 typeof(RegistryWithNoConstructor),
                 typeof(RegistryWithTestService),
                 typeof(RegistryWithDerivedTestService),
                 typeof(InternalRegistry)
-            },
-            providers: new[] {
+            ],
+            providers: [
                 new TestDerivedImplementation()
-            }
+            ]
         );
 
         // Act
@@ -42,17 +42,17 @@ public class RegistryActivator_Should {
 
         var service = CreateService();
         var options = CreateOptions(
-            registryTypes: new[] { typeof(RegistryWithMultipleParameters) },
-            providers: new object[] { stringProvider, boolProvider, numProvider }
+            registryTypes: [typeof(RegistryWithMultipleParameters)],
+            providers: [stringProvider, boolProvider, numProvider]
         );
 
         // Act
         var registry = (RegistryWithMultipleParameters)service.InstantiateRegistries(options).Single();
 
         // Assert
-        Assert.Equal(
-            new object[] { stringProvider, numProvider, boolProvider },
-            new object[] { registry.Param1, registry.Param2, registry.Param3 }
+        Assert.Equal<object[]>(
+            [stringProvider, numProvider, boolProvider],
+            [registry.Param1, registry.Param2, registry.Param3]
         );
     }
 
@@ -61,10 +61,10 @@ public class RegistryActivator_Should {
         // Arrange
         var options = CreateOptions(
             publicOnly: true,
-            registryTypes: new[] {
+            registryTypes: [
                 typeof(RegistryWithNoConstructor),
                 typeof(InternalRegistry)
-            }
+            ]
         );
         var service = CreateService();
 
@@ -73,7 +73,7 @@ public class RegistryActivator_Should {
 
         // Assert
         Assert.Equal(
-            new[] { typeof(RegistryWithNoConstructor) },
+            [typeof(RegistryWithNoConstructor)],
             createdRegistries
         );
     }
@@ -85,7 +85,7 @@ public class RegistryActivator_Should {
         // Arrange
         var options = CreateOptions(
             publicOnly: publicOnly,
-            registryTypes: publicOnly ? new[] { typeof(InternalRegistry) } : Array.Empty<Type>());
+            registryTypes: publicOnly ? new[] { typeof(InternalRegistry) } : []);
         var service = CreateService();
 
         // Act
@@ -99,8 +99,8 @@ public class RegistryActivator_Should {
     public void ThrowInvalidOperationException_WhenNoSuitableConstructorFound_AndListAllowedParams() {
         // Arrange
         var options = CreateOptions(
-            registryTypes: new[] { typeof(RegistryWithMultipleParameters) },
-            providers: new object[] { "some-string-provider", true }
+            registryTypes: [typeof(RegistryWithMultipleParameters)],
+            providers: ["some-string-provider", true]
         );
         var service = CreateService();
 
@@ -118,7 +118,7 @@ public class RegistryActivator_Should {
     [Fact]
     public void ReturnRegistryInstances_DefinedInTheOptions_AlongWithTheCreatedInstances() {
         // Arrange
-        var options = CreateOptions(instances: new[] { new RegistryWithNoConstructor() }, registryTypes: new[] { typeof(InternalRegistry) });
+        var options = CreateOptions(instances: [new RegistryWithNoConstructor()], registryTypes: [typeof(InternalRegistry)]);
         var service = CreateService();
 
         // Act
@@ -153,7 +153,7 @@ public class RegistryActivator_Should {
         }
 
         if (instances is not null) {
-            options.Registries = instances.ToList();
+            options.Registries = [.. instances];
         }
 
         return options;

@@ -188,7 +188,7 @@ public class ServiceCollectionRegistryConfiguration {
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     public ServiceCollectionRegistryConfiguration FromAssembliesOf(params Type[] assemblyMarkers)
-        => FromAssemblies(assemblyMarkers.Select(marker => marker.Assembly).ToArray());
+        => FromAssemblies([.. assemblyMarkers.Select(marker => marker.Assembly)]);
 
     /// <summary>
     /// The assemblies to scan for <see cref="IRegistryModule"/> implementations.
@@ -376,7 +376,7 @@ public class ServiceCollectionRegistryConfiguration {
         if (resolvedTypes.Count == 0) {
             return;
         }
-        OfTypes(resolvedTypes.ToArray());
+        OfTypes([.. resolvedTypes]);
     }
 
     private void RemoveRegistriesSkippedInConfig() {

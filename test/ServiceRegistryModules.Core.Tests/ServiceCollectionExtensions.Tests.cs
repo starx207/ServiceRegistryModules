@@ -334,7 +334,7 @@ public class ServiceCollectionExtensions_Should {
 
         // Assert
         mock.OptionsApplied?.RegistryTypes.Should().HaveCount(2)
-            .And.Subject.Select(t => t.FullName).Should().BeEquivalentTo(new[] { regType.FullName, "UnreferencedTestSamples.TestRegistry1" });
+            .And.Subject.Select(t => t.FullName).Should().BeEquivalentTo([regType.FullName, "UnreferencedTestSamples.TestRegistry1"]);
     }
 
     [Fact]
@@ -380,11 +380,11 @@ public class ServiceCollectionExtensions_Should {
         var configKey = $"{ServiceRegistryModulesDefaults.REGISTRIES_KEY}:{ServiceRegistryModulesDefaults.ADD_MODULES_KEY}";
         var configBuilder = new ConfigurationBuilder();
         configBuilder.AddInMemoryCollection(configuredAdditions.SelectMany((name, i) => name == validRegistryName
-                ? (new[] { KeyValuePair.Create($"{configKey}:{i}", (string?)name) })
-                : (IEnumerable<KeyValuePair<string, string?>>)(new[] {
+                ? [KeyValuePair.Create($"{configKey}:{i}", (string?)name)]
+                : (IEnumerable<KeyValuePair<string, string?>>)[
                     KeyValuePair.Create($"{configKey}:{i}:FullName", (string?)name),
                     KeyValuePair.Create($"{configKey}:{i}:SuppressErrors", (string?)"true")
-                })));
+                ]));
 
         // Act
         var action = () => services.ApplyRegistries(config => config.UsingConfiguration(configBuilder.Build()));

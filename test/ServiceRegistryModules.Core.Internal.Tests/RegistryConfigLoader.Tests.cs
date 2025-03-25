@@ -263,9 +263,9 @@ public class RegistryConfigLoader_Should {
         // Arrange
         var key = "registry_config";
 
-        var options = CreateOptions(builder => builder.AddInMemoryCollection(new[] {
+        var options = CreateOptions(builder => builder.AddInMemoryCollection([
             KeyValuePair.Create($"{key}:{ServiceRegistryModulesDefaults.CONFIGURATION_KEY}:SomeRegistry", (string?)"no-properties")
-        }), sectionKey: key);
+        ]), sectionKey: key);
         var service = CreateService();
 
         // Act

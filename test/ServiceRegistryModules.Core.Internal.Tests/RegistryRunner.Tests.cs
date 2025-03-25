@@ -68,7 +68,7 @@ public class RegistryRunner_Should {
                     Times.Once(), "Configuration not applied");
             }).Verifiable("Services not configured");
 
-        mock.SetupInstantiateRegistries(returnVal: new[] { registry.Object });
+        mock.SetupInstantiateRegistries(returnVal: [registry.Object]);
 
         // Act
         service.ApplyRegistries(CreateServiceCollection(), CreateOptions());
@@ -155,10 +155,10 @@ public class RegistryRunner_Should {
     #region Test Inputs
     public static TheoryData<string[][], string, int[]> EnvironmentMatchInput(string? actualEnvironment) {
         var registryEnvironments = new string[][] {
-            new[] { "Development" },
-            new[] { "production" },
-            new[] { "development", "Production" },
-            Array.Empty<string>()
+            ["Development"],
+            ["production"],
+            ["development", "Production"],
+            []
         };
         var expectedRegistryIndicies = new List<int>();
 
@@ -230,7 +230,7 @@ public class RegistryRunner_Should {
             if (callback is not null) {
                 returnsThrows = setup.Callback(callback);
             }
-            returnsThrows.Returns(returnVal ?? Enumerable.Empty<IRegistryModule>());
+            returnsThrows.Returns(returnVal ?? []);
         }
 
         public void SetupInitializeFrom(Action<RegistryOptions>? callback) {

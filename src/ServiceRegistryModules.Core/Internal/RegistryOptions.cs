@@ -14,9 +14,9 @@ internal class RegistryOptions {
     public string RegistryConfigSectionKey { get; set; } = ServiceRegistryModulesDefaults.REGISTRIES_KEY;
 
     public RegistryOptions() {
-        Registries = new();
-        RegistryTypes = new();
-        Providers = new();
-        AllowedRegistryCtorArgTypes = new();
+        Registries = [];
+        RegistryTypes = [];
+        Providers = [];
+        AllowedRegistryCtorArgTypes = [];
     }
 }
