@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using RegistryServices;
 using ServiceRegistryModules;
 
 namespace TestSamples1;
@@ -9,9 +10,10 @@ public class TestRegistry2 : AbstractRegistryModule {
     public event EventHandler<EventArgs>? MyPublicEvent;
 
     public override void ConfigureServices(IServiceCollection services) {
-        services.AddSingleton<Service>();
+        services.AddSingleton<Service>()
+            .AddTransient<ITestService1, Service>();
         MyPublicEvent?.Invoke(this, EventArgs);
     }
 
-    public class Service { }
+    public class Service : ITestService1 { }
 }
