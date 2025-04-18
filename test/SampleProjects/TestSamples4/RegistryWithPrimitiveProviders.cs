@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using RegistryServices;
 using ServiceRegistryModules;
 
 namespace TestSamples4;

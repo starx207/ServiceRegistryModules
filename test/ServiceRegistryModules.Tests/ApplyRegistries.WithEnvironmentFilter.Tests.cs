@@ -38,7 +38,7 @@ public class ApplyRegistries_WithEnvironmentFilter_Tests
         ).UsingEnvironment(env));
         var provider = services.BuildServiceProvider();
 
-        var configuredServices = provider.GetServices<TestSamples4.ConfigurableService>();
+        var configuredServices = provider.GetServices<RegistryServices.ConfigurableService>();
         var environments = configuredServices.Select(s => s.Message).ToList();
         environments.Sort();
 

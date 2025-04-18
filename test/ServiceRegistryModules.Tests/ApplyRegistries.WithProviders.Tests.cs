@@ -8,6 +8,22 @@ using Shouldly;
 
 namespace ServiceRegistryModules.Tests;
 
+/*
+    TODO (not necessarily all in this test file):
+        -Test exception when UsingEnvironment with non IHostEnvironment type
+        -Test exception when WithConfigurationsFromSection is null or whitespace
+        -Test exception when FromAssemblies doesn't pass any assemblies
+        -Test exception when OfTypes passes a type that doesn't implement IRegistryModule
+        -Test removing explicitly constructed registry via config file
+        -Test adding multiple providers of the same type
+        -Test adding a provider of a base type and of a derived type from the same base
+        -Test adding 2 providers that derive from the same base type
+        -Test configuring registry value from another configuration key
+        => test exception when the key is not found (unless supressing errors)
+        -Test configuring something that is ambiguous between event and property
+
+    TODO: Should I also test the WebApplicationBuilder variants? Not sure that adds a lot of value
+*/
 public class ApplyRegistries_WithProviders_Tests
 {
     [Theory,
@@ -27,7 +43,7 @@ public class ApplyRegistries_WithProviders_Tests
             cfg.UsingProviders(message, negate);
         });
         var provider = services.BuildServiceProvider();
-        var service = provider.GetService<TestSamples4.ConfigurableService>();
+        var service = provider.GetService<RegistryServices.ConfigurableService>();
 
         // Assert
         service?.Message.ShouldBe(expectedMsg);
@@ -58,7 +74,7 @@ public class ApplyRegistries_WithProviders_Tests
         services.ApplyRegistries(hbc, cfg
             => cfg.OfTypes(typeof(TestSamples4.RegistryWithEnvironmentAndConfig)));
         var provider = services.BuildServiceProvider();
-        var service = provider.GetService<TestSamples4.ConfigurableService>();
+        var service = provider.GetService<RegistryServices.ConfigurableService>();
 
         // Assert
         service?.Message.ShouldBe(expectedMsg);
@@ -95,7 +111,7 @@ public class ApplyRegistries_WithProviders_Tests
             .OfTypes(typeof(TestSamples4.RegistryWithEnvironmentAndConfig))
             .UsingProviders(provider));
         var svcProvider = services.BuildServiceProvider();
-        var service = svcProvider.GetService<TestSamples4.ConfigurableService>();
+        var service = svcProvider.GetService<RegistryServices.ConfigurableService>();
 
         // Assert
         service?.Message.ShouldBe(expectedMsg);
@@ -114,8 +130,8 @@ public class ApplyRegistries_WithProviders_Tests
         };
 
         // Assert
-        Should.Throw<RegistryActivationException>(registrationAction)
-            .ShouldBe("Unable to activate IRegistryModule of type 'RegistryWithEnvironmentAndConfig' " +
+        var ex = Should.Throw<RegistryActivationException>(registrationAction);
+        ex.Message.ShouldBe("Unable to activate IRegistryModule of type 'RegistryWithEnvironmentAndConfig' " +
             "-- no suitable constructor found. " +
             "Allowable constructor parameters are: System.String, System.Boolean");
     }
