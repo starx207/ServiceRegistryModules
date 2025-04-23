@@ -47,6 +47,30 @@ public class ConfigureRegistries_AddRemove_Tests {
         serviceTypes.ShouldBe([typeof(TestSamples1.TestRegistry1.Service)]);
     }
 
+    [Fact]
+    public void RemoveRegistryInstance() {
+        // Arrange
+        var configuration = JsonConfig.Create("""
+        {
+            "service_registries:skip": [
+                "TestSamples1.TestRegistry2"
+            ]
+        }
+        """);
+        var services = new ServiceCollection();
+
+        // Act
+        services.ApplyRegistries(cfg => {
+            cfg.From(new TestSamples1.TestRegistry2())
+                .UsingConfiguration(configuration);
+        });
+        var provider = services.BuildServiceProvider();
+        var registeredSvc = provider.GetService<TestSamples1.TestRegistry2.Service>();
+
+        // Assert
+        registeredSvc.ShouldBeNull();
+    }
+
     [Theory,
         InlineData(true),
         InlineData(false)]

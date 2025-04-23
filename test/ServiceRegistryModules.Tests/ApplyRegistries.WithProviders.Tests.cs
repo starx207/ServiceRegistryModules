@@ -9,23 +9,13 @@ using Shouldly;
 namespace ServiceRegistryModules.Tests;
 
 /*
-    TODO (not necessarily all in this test file):
-        -Test exception when UsingEnvironment with non IHostEnvironment type
-        -Test exception when WithConfigurationsFromSection is null or whitespace
-        -Test exception when FromAssemblies doesn't pass any assemblies
-        -Test exception when OfTypes passes a type that doesn't implement IRegistryModule
-        -Test removing explicitly constructed registry via config file
-        -Test adding multiple providers of the same type
-        -Test adding a provider of a base type and of a derived type from the same base
-        -Test adding 2 providers that derive from the same base type
-        -Test configuring registry value from another configuration key
-        => test exception when the key is not found (unless supressing errors)
-        -Test configuring something that is ambiguous between event and property
-
-    TODO: Should I also test the WebApplicationBuilder variants? Not sure that adds a lot of value
+    TODO:
+        // Actually, I don't know that these are necessary. I misread the code when reviewing coverage.
+        // I could still do these tests, but I don't really know what the results wil be.
+        -----Test adding a provider of a base type and of a derived type from the same base
+        -----Test adding 2 providers that derive from the same base type
 */
-public class ApplyRegistries_WithProviders_Tests
-{
+public class ApplyRegistries_WithProviders_Tests {
     [Theory,
         InlineData(true, "Hello, World"),
         InlineData(false, "Happy Birthday")]
@@ -47,6 +37,98 @@ public class ApplyRegistries_WithProviders_Tests
 
         // Assert
         service?.Message.ShouldBe(expectedMsg);
+    }
+
+    [Fact]
+    public void UseCorrectProvider_WhenMultipleProvidersOfSameType_ArePresent() {
+        // Arrange
+        var fixture = new Fixture();
+        var string1 = fixture.Create<string>();
+        var string2 = fixture.Create<string>();
+        var expectedMsg = string1; // string1 will be "provided" first, so it should be used
+        var services = new ServiceCollection();
+
+        // Act
+        services.ApplyRegistries(cfg => {
+            cfg.OfTypes(typeof(TestSamples4.RegistryWithPrimitiveProviders));
+            cfg.UsingProviders(string1, false, string2);
+        });
+        var provider = services.BuildServiceProvider();
+        var service = provider.GetService<RegistryServices.ConfigurableService>();
+
+        // Assert
+        service?.Message.ShouldBe(expectedMsg);
+    }
+
+    [Theory,
+        InlineData(true),
+        InlineData(false)]
+    public void UseCorrectEnvironment_WhenProvidedInDifferentWays(bool mostSpecificFirst) {
+        // Arrange
+        var fixture = new Fixture();
+        var appName = fixture.Create<string>();
+
+        var env1 = new TestHostEnvironment {
+            ApplicationName = appName
+        };
+        var env2 = new TestHostEnvironment {
+            ApplicationName = fixture.Create<string>()
+        };
+
+        var services = new ServiceCollection();
+
+        // Act
+        services.ApplyRegistries(cfg => {
+            cfg.OfTypes(typeof(TestSamples4.RegistryWithEnvironmentAndConfig));
+            if (mostSpecificFirst) {
+                cfg.UsingEnvironment(env2).UsingProviders(env1);
+            } else {
+                cfg.UsingProviders(env2).UsingEnvironment(env1);
+            }
+        });
+        var provider = services.BuildServiceProvider();
+        var service = provider.GetService<RegistryServices.ConfigurableService>();
+
+        // Assert
+        service?.Message.ShouldBe(appName);
+    }
+
+    [Theory,
+        InlineData(true),
+        InlineData(false)]
+    public void UseCorrectConfiguration_WhenProvidedInDifferentWays(bool mostSpecificFirst) {
+        // Arrange
+        var fixture = new Fixture();
+        var connStr = fixture.Create<string>();
+
+        var config1 = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>() {
+                { "ConnectionString", connStr }
+            })
+            .Build();
+
+        var config2 = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>() {
+                { "ConnectionString", fixture.Create<string>() }
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+
+        // Act
+        services.ApplyRegistries(cfg => {
+            cfg.OfTypes(typeof(TestSamples4.RegistryWithEnvironmentAndConfig));
+            if (mostSpecificFirst) {
+                cfg.UsingConfiguration(config2).UsingProviders(config1);
+            } else {
+                cfg.UsingProviders(config2).UsingConfiguration(config1);
+            }
+        });
+        var provider = services.BuildServiceProvider();
+        var service = provider.GetService<RegistryServices.ConfigurableService>();
+
+        // Assert
+        service?.Message.ShouldBe(connStr);
     }
 
     [Fact]

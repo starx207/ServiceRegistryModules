@@ -30,6 +30,93 @@ public class ConfigureRegistries_SetEvent_Tests {
     }
 
     [Fact]
+    public void RetrieveAndInvokeEventHandler_FromOtherConfiguration() {
+        // Arrange
+        var config = JsonConfig.Create("""
+        {
+            "service_registries:configuration": {
+                "TestRegistry2": {
+                    "MyPublicEvent": {
+                        "Value": "other:section:handler",
+                        "Type": "config"
+                    }
+                }
+            },
+            "other:section": {
+                "handler": "ServiceRegistryModules.Tests.ConfigureRegistries_SetEvent_Tests+Events.OnHandledEvent"
+            }
+        }
+        """);
+
+        // Act
+        TestSamples4.TestHost.ConfigureServices(config);
+
+        // Assert
+        Events.HandledEventFor.ShouldBeOfType<TestSamples1.TestRegistry2>();
+        Events.HandledEventArgs.ShouldBeSameAs(TestSamples1.TestRegistry2.EventArgs);
+    }
+
+    [Fact]
+    public void ThrowWhenRetreivingHandler_FromOtherConfiguration_ThatIsNotSupplied() {
+        // Arrange
+        var config = JsonConfig.Create("""
+        {
+            "service_registries:configuration": {
+                "TestRegistry2": {
+                    "MyPublicEvent": {
+                        "Value": "other:handler",
+                        "Type": "config"
+                    }
+                }
+            },
+            "other:section": {
+                "handler": "ServiceRegistryModules.Tests.ConfigureRegistries_SetEvent_Tests+Events.OnHandledEvent"
+            }
+        }
+        """);
+
+        var services = new ServiceCollection();
+
+        // Act/Assert
+        var ex = Should.Throw<RegistryConfigurationException>(() => {
+            services.ApplyRegistries(cfg => cfg
+                .OfTypes(typeof(TestSamples1.TestRegistry2))
+                .UsingConfiguration(config));
+        });
+        ex.Message.ShouldBe("Unable to resolve configuration key for 'other:handler'");
+    }
+
+    [Fact]
+    public void NotThrowWhenRetreivingHandler_FromOtherConfiguration_ThatIsNotSupplied_WithErrorSuppression() {
+        // Arrange
+        var config = JsonConfig.Create("""
+        {
+            "service_registries:configuration": {
+                "TestRegistry2": {
+                    "MyPublicEvent": {
+                        "Value": "other:handler",
+                        "Type": "config",
+                        "SuppressErrors": true
+                    }
+                }
+            },
+            "other:section": {
+                "handler": "ServiceRegistryModules.Tests.ConfigureRegistries_SetEvent_Tests+Events.OnHandledEvent"
+            }
+        }
+        """);
+
+        var services = new ServiceCollection();
+
+        // Act/Assert
+        Should.NotThrow(() => {
+            services.ApplyRegistries(cfg => cfg
+                .OfTypes(typeof(TestSamples1.TestRegistry2))
+                .UsingConfiguration(config));
+        });
+    }
+
+    [Fact]
     public void InvokeEventHandler_FromUnreferencedAssembly() {
         // Arrange
         var config = JsonConfig.Create("""
@@ -197,7 +284,7 @@ public class ConfigureRegistries_SetEvent_Tests {
             info.AddValue(nameof(InnerExTypeShortName), InnerExTypeShortName);
         }
     }
-    
+
     public static class Events {
         public static object? HandledEventFor = null;
         public static EventArgs? HandledEventArgs = null;

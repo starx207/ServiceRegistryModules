@@ -45,6 +45,11 @@ internal class RegistryConfigApplicator : IRegistryConfigApplicator {
         propertiesToSet = FilterUnsettablePropertiesOrThrow(registryType, propertiesToSet, config);
 
         foreach (var prop in propertiesToSet) {
+            if ((!config.ContainsKey(prop.Name)) && allConfig.TryGetValue(prop.Name, out var cfg) && !(ConfigurationType.Auto | ConfigurationType.Property).HasFlag(cfg.Type)) {
+                // Configuration for this property was defined, but not for the auto or property type, so skip it.
+                continue;
+            }
+
             var converter = TypeDescriptor.GetConverter(prop.PropertyType);
             try {
                 prop.SetValue(registry, converter.ConvertFrom(config[prop.Name].Value!));
@@ -61,6 +66,11 @@ internal class RegistryConfigApplicator : IRegistryConfigApplicator {
         var config = FilterConfigType(allConfig, ConfigurationType.Event, eventsToSet.Select(e => e.Name));
 
         foreach (var evt in eventsToSet) {
+            if ((!config.ContainsKey(evt.Name)) && allConfig.TryGetValue(evt.Name, out var cfg) && !(ConfigurationType.Auto | ConfigurationType.Event).HasFlag(cfg.Type)) {
+                // Configuration for this event was defined, but not for the auto or event type, so skip it.
+                continue;
+            }
+
             var suppressErrs = config[evt.Name].SuppressErrors;
             var (assmName, typName, mthdName) = UnpackStaticMethod(config[evt.Name].Value!.ToString(), suppressErrs);
             if (assmName is null || typName is null || mthdName is null) {

@@ -95,6 +95,100 @@ public class ConfigureRegistries_SetProperties_Tests {
     }
 
     [Fact]
+    public void RetrieveAndInvokePropertyValue_FromOtherConfiguration() {
+        // Arrange
+        var expected = new Fixture().Create<string>();
+        var config = JsonConfig.Create($$"""
+        {
+            "service_registries:configuration": {
+                "ConfigurableRegistry1": {
+                    "PublicString": {
+                        "Value": "other:section:value",
+                        "Type": "config"
+                    }
+                }
+            },
+            "other:section": {
+                "value": "{{expected}}",
+            }
+        }
+        """);
+
+        var services = new ServiceCollection();
+
+        // Act
+        services.ApplyRegistries(cfg => cfg
+            .OfTypes(typeof(ConfigurableRegistry1))
+            .UsingConfiguration(config)
+        );
+        var configSvc = services.BuildServiceProvider().GetRequiredService<ConfigurableService>();
+        var actual = JsonSerializer.Deserialize<ExpectedPublicProps>(configSvc.Message);
+
+        // Assert
+        actual?.PublicString.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void ThrowWhenRetreivingValue_FromOtherConfiguration_ThatIsNotSupplied() {
+        // Arrange
+        var config = JsonConfig.Create("""
+        {
+            "service_registries:configuration": {
+                "ConfigurableRegistry1": {
+                    "PublicString": {
+                        "Value": "other:value",
+                        "Type": "config"
+                    }
+                }
+            },
+            "other:section": {
+                "value": "Hello, World!"
+            }
+        }
+        """);
+
+        var services = new ServiceCollection();
+
+        // Act/Assert
+        var ex = Should.Throw<RegistryConfigurationException>(() => {
+            services.ApplyRegistries(cfg => cfg
+                .OfTypes(typeof(ConfigurableRegistry1))
+                .UsingConfiguration(config));
+        });
+        ex.Message.ShouldBe("Unable to resolve configuration key for 'other:value'");
+    }
+
+    [Fact]
+    public void NotThrowWhenRetreivingValue_FromOtherConfiguration_ThatIsNotSupplied_WithErrorSuppression() {
+        // Arrange
+        var config = JsonConfig.Create("""
+        {
+            "service_registries:configuration": {
+                "ConfigurableRegistry1": {
+                    "PublicString": {
+                        "Value": "other:value",
+                        "Type": "config",
+                        "SuppressErrors": true
+                    }
+                }
+            },
+            "other:section": {
+                "value": "Hello, World!"
+            }
+        }
+        """);
+
+        var services = new ServiceCollection();
+
+        // Act/Assert
+        Should.NotThrow(() => {
+            services.ApplyRegistries(cfg => cfg
+                .OfTypes(typeof(ConfigurableRegistry1))
+                .UsingConfiguration(config));
+        });
+    }
+
+    [Fact]
     public void ThrowException_WhenTryingToSetProperty_WithNoSetter() {
         // Arrange
         var fixture = new Fixture();
@@ -148,7 +242,7 @@ public class ConfigureRegistries_SetProperties_Tests {
         var services = new ServiceCollection();
 
         // Act/Assert
-        Should.NotThrow(() =>{
+        Should.NotThrow(() => {
             services.ApplyRegistries(cfg => cfg
                 .OfTypes(typeof(ConfigurableRegistry1))
                 .UsingConfiguration(config));

@@ -9,7 +9,9 @@ using Shouldly;
 using Xunit.Abstractions;
 
 namespace ServiceRegistryModules.Tests;
-
+/*
+    TODO (not necessarily all in this test file): Should I also test the WebApplicationBuilder variants? Not sure that adds a lot of value
+*/
 public class ConfigureRegistries_WildcardMatching_Tests {
     [Theory,
         MemberData(nameof(MultiMatchData))]
@@ -74,6 +76,68 @@ public class ConfigureRegistries_WildcardMatching_Tests {
 
         // Assert
         cfgService?.Message.ShouldBe(expectedMsg);
+    }
+
+    [Fact]
+    public void ConfigureEvents_WithSameNameAsOtherProperties_WhenTypeExplicitlyGiven() {
+        // Arrange
+        var config = JsonConfig.Create("""
+        {
+            "service_registries:configuration": {
+                "*Ambiguous*Registry": {
+                    "AmbiguousConfig": {
+                        "Value": "ServiceRegistryModules.Tests.ConfigureRegistries_WildcardMatching_Tests+Events.OnHandledEvent",
+                        "Type": "event"
+                    }
+                }
+            }
+        }
+        """);
+
+        var services = new ServiceCollection();
+
+        // Act
+        services.ApplyRegistries(cfg => cfg
+            .OfTypes(
+                typeof(TestSamples4.AmbiguousEventRegistry),
+                typeof(TestSamples4.AmbiguousPropertyRegistry)
+            ).UsingConfiguration(config));
+
+        // Assert
+        Events.HandledEventFor.ShouldBeOfType<TestSamples4.AmbiguousEventRegistry>();
+        Events.HandledEventArgs.ShouldBeSameAs(TestSamples4.AmbiguousEventRegistry.EventArgs);
+    }
+
+    [Fact]
+    public void ConfigureProperties_WithSameNameAsOtherEvents_WhenTypeExplicitlyGiven() {
+        // Arrange
+        var expected = new Fixture().Create<string>();
+        var config = JsonConfig.Create($$"""
+        {
+            "service_registries:configuration": {
+                "*Ambiguous*Registry": {
+                    "AmbiguousConfig": {
+                        "Value": "{{expected}}",
+                        "Type": "property"
+                    }
+                }
+            }
+        }
+        """);
+
+        var services = new ServiceCollection();
+
+        // Act
+        services.ApplyRegistries(cfg => cfg
+            .OfTypes(
+                typeof(TestSamples4.AmbiguousEventRegistry),
+                typeof(TestSamples4.AmbiguousPropertyRegistry)
+            ).UsingConfiguration(config));
+        var provider = services.BuildServiceProvider();
+        var cfgService = provider.GetService<ConfigurableService>();
+
+        // Assert
+        cfgService?.Message.ShouldBe(expected);
     }
 
     #region Test Data
@@ -154,6 +218,16 @@ public class ConfigureRegistries_WildcardMatching_Tests {
     #endregion
 
     #region Test Classes
+    public static class Events {
+        public static object? HandledEventFor = null;
+        public static EventArgs? HandledEventArgs = null;
+
+        public static void OnHandledEvent(object sender, EventArgs e) {
+            HandledEventFor = sender;
+            HandledEventArgs = e;
+        }
+    }
+
     public class MatchSpecificityTestCase : IXunitSerializable {
         public string DisplayName { get; private set; }
         public (string Pattern, string Message)[] ConfiguredMessages { get; private set; }
