@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- TODO: add net6.0 (doesn't work in codespaces) -->
     <TargetFrameworks>net8.0;net7.0;net6.0</TargetFrameworks>
     <Nullable>enable</Nullable>
 
