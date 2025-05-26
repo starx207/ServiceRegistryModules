@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using ServiceRegistryModules.Exceptions;
 
 namespace ServiceRegistryModules;
+// TODO: See comment on ServiceCollectionExtensions about using interceptors to get the calling assembly.
 public static class WebApplicationBuilderExtensions {
     /// <summary>
     /// Applies the <see cref="IRegistryModule"/>s from the given assemblies.
@@ -40,7 +41,7 @@ public static class WebApplicationBuilderExtensions {
         => builder.ApplyRegistries(registryConfiguration, Assembly.GetCallingAssembly());
 
     private static void ApplyRegistries(this WebApplicationBuilder builder, Action<ServiceCollectionRegistryConfiguration> registryConfiguration, Assembly callingAssembly)
-        => builder.Services.ApplyRegistries(config => {
+        => builder.Services.ApplyRegistries_Old(config => {
             config.UsingConfiguration(builder.Configuration);
             config.UsingEnvironment(builder.Environment);
             registryConfiguration(config);

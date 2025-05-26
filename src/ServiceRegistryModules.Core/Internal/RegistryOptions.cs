@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
 namespace ServiceRegistryModules.Internal;
-internal class RegistryOptions {
+public sealed class RegistryOptions {
     public List<IRegistryModule> Registries { get; set; }
     public List<Type> RegistryTypes { get; set; }
     public List<object> Providers { get; set; }

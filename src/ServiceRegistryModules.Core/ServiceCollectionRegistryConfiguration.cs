@@ -11,12 +11,16 @@ using Microsoft.Extensions.Hosting;
 using ServiceRegistryModules.Exceptions;
 using ServiceRegistryModules.Internal;
 
+// TODO: This class needs to be part of the source generator so it can have partial methods generated for it.
 namespace ServiceRegistryModules;
-
+// TODO: There's a lot of reflection going on here (getting types in an assembly, dynamic assembly loading, etc).
+//       Consier how we could use a source generator instead (try and do it without interceptors if possible).
 public class FullServiceCollectionRegistryConfiguration : ServiceCollectionRegistryConfiguration {
     
-    internal FullServiceCollectionRegistryConfiguration() { }
-    internal FullServiceCollectionRegistryConfiguration(RegistryOptions options) : base(options) { }
+    [Obsolete("This was internal")]
+    public FullServiceCollectionRegistryConfiguration() { }
+    [Obsolete("This was internal")]
+    public FullServiceCollectionRegistryConfiguration(RegistryOptions options) : base(options) { }
 
     /// <inheritdoc cref="ServiceCollectionRegistryConfiguration.UsingProviders(object[])"/>
     public new FullServiceCollectionRegistryConfiguration UsingProviders(params object[] providers) {
@@ -188,7 +192,7 @@ public class ServiceCollectionRegistryConfiguration {
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     public ServiceCollectionRegistryConfiguration FromAssembliesOf(params Type[] assemblyMarkers)
-        => FromAssemblies(assemblyMarkers.Select(marker => marker.Assembly).ToArray());
+        => FromAssemblies([.. assemblyMarkers.Select(marker => marker.Assembly)]);
 
     /// <summary>
     /// The assemblies to scan for <see cref="IRegistryModule"/> implementations.
@@ -290,12 +294,14 @@ public class ServiceCollectionRegistryConfiguration {
         return this;
     }
 
-    internal ServiceCollectionRegistryConfiguration WithDefaultAssembly(Assembly assembly) {
+    [Obsolete("This was internal")]
+    public ServiceCollectionRegistryConfiguration WithDefaultAssembly(Assembly assembly) {
         _defaultAssembly = assembly;
         return this;
     }
 
-    internal RegistryOptions GetOptions() {
+    [Obsolete("This was internal")]
+    public RegistryOptions GetOptions() {
         LoadAdditionalRegistriesFromConfig();
 
         if (Options.Registries.Count == 0 && Options.RegistryTypes.Count == 0) {
@@ -310,12 +316,6 @@ public class ServiceCollectionRegistryConfiguration {
         if (Options.Registries.Count > 0 && Options.RegistryTypes.Count > 0) {
             var concreteTypes = Options.Registries.Select(m => m.GetType());
             Options.RegistryTypes.RemoveAll(mt => concreteTypes.Contains(mt));
-        }
-    }
-
-    private void AddAllowedArgType(Type type) {
-        if (!Options.AllowedRegistryCtorArgTypes.Contains(type)) {
-            Options.AllowedRegistryCtorArgTypes.Add(type);
         }
     }
 
@@ -376,7 +376,7 @@ public class ServiceCollectionRegistryConfiguration {
         if (resolvedTypes.Count == 0) {
             return;
         }
-        OfTypes(resolvedTypes.ToArray());
+        OfTypes([.. resolvedTypes]);
     }
 
     private void RemoveRegistriesSkippedInConfig() {

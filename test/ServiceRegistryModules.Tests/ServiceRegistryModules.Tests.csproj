@@ -8,6 +8,11 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.18.1" />
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
@@ -21,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/ServiceRegistryModules.Core/ServiceRegistryModules.Core.csproj" />
+    <ProjectReference Include="../../src/ServiceRegistryModules.SourceGenerator/ServiceRegistryModules.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="../RegistryServices/RegistryServices.csproj" />
     <ProjectReference Include="../SampleProjects/TestSamples1/TestSamples1.csproj" />
     <ProjectReference Include="../SampleProjects/TestSamples2/TestSamples2.csproj" />

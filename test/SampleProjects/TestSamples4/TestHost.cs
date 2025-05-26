@@ -7,7 +7,7 @@ namespace TestSamples4;
 public static class TestHost {
     public static void ConfigureServices(IConfiguration config) {
         var services = new ServiceCollection();
-        services.ApplyRegistries(opt =>
+        services.ApplyRegistries_Old(opt =>
             opt.FromAssemblyOf<TestRegistry2>()
                 .UsingConfiguration(config)
         );

@@ -35,7 +35,7 @@ public class ServiceCollectionExtensions_Should {
         expectedOptions.RegistryTypes.Add(typeof(TestRegistry1));
 
         // Act
-        services.ApplyRegistries();
+        services.ApplyRegistries_Old();
 
         // Assert
         mock.OptionsApplied.Should().BeEquivalentTo(expectedOptions);
@@ -49,7 +49,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices(mock);
 
         // Act
-        services.ApplyRegistries(config => config.WithConfigurationsFromSection(expectedKey));
+        services.ApplyRegistries_Old(config => config.WithConfigurationsFromSection(expectedKey));
 
         // Assert
         mock.OptionsApplied?.RegistryConfigSectionKey.Should().Be(expectedKey);
@@ -62,7 +62,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices(mock);
 
         // Act
-        services.ApplyRegistries(config => config.PublicOnly());
+        services.ApplyRegistries_Old(config => config.PublicOnly());
 
         // Assert
         mock.OptionsApplied?.PublicOnly.Should().BeTrue();
@@ -81,7 +81,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices(mock);
 
         // Act
-        services.ApplyRegistries(config => config.FromAssembliesOf(
+        services.ApplyRegistries_Old(config => config.FromAssembliesOf(
             typeof(TestSamples1.TestRegistry1),
             typeof(TestSamples2.TestRegistry1)
         ));
@@ -104,7 +104,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices(mock);
 
         // Act
-        services.ApplyRegistries(config => config.UsingProviders(providers));
+        services.ApplyRegistries_Old(config => config.UsingProviders(providers));
 
         // Assert
         using (new AssertionScope()) {
@@ -122,7 +122,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices(mock);
 
         // Act
-        services.ApplyRegistries(config => config.UsingProviders("Hello", "World"));
+        services.ApplyRegistries_Old(config => config.UsingProviders("Hello", "World"));
 
         // Assert
         mock.OptionsApplied?.Providers.Should()
@@ -137,7 +137,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices(mock);
 
         // Act
-        services.ApplyRegistries(config => config.OfTypes(typeof(TestRegistry1)));
+        services.ApplyRegistries_Old(config => config.OfTypes(typeof(TestRegistry1)));
 
         // Assert
         mock.OptionsApplied?.RegistryTypes.Should().Equal(typeof(TestRegistry1));
@@ -149,7 +149,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices();
 
         // Act
-        var action = () => services.ApplyRegistries(config
+        var action = () => services.ApplyRegistries_Old(config
             => config.OfTypes(typeof(TestService1), typeof(Dependencies)));
 
         // Assert
@@ -167,7 +167,7 @@ public class ServiceCollectionExtensions_Should {
         var expectedEnv = new TestEnvironment();
 
         // Act
-        services.ApplyRegistries(config => {
+        services.ApplyRegistries_Old(config => {
             if (setThroughProviderExtension) {
                 config.UsingProviders(expectedEnv);
             } else {
@@ -194,7 +194,7 @@ public class ServiceCollectionExtensions_Should {
         var expectedEnv = new TestOtherEnvironment();
 
         // Act
-        services.ApplyRegistries(config
+        services.ApplyRegistries_Old(config
             => config.UsingEnvironment(firstEnv)
                 .UsingEnvironment(expectedEnv));
 
@@ -217,7 +217,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices(mock);
 
         // Act
-        var action = () => services.ApplyRegistries(config => config.UsingEnvironment(new TestService1()));
+        var action = () => services.ApplyRegistries_Old(config => config.UsingEnvironment(new TestService1()));
 
         // Assert
         action.Should().Throw<RegistryConfigurationException>()
@@ -234,7 +234,7 @@ public class ServiceCollectionExtensions_Should {
         var expectedCfg = new ConfigurationBuilder().Build();
 
         // Act
-        services.ApplyRegistries(config => {
+        services.ApplyRegistries_Old(config => {
             if (setThroughProviderExtension) {
                 config.UsingProviders(expectedCfg);
             } else {
@@ -259,7 +259,7 @@ public class ServiceCollectionExtensions_Should {
         var expectedCfg = new ConfigurationBuilder().Build();
 
         // Act
-        services.ApplyRegistries(config
+        services.ApplyRegistries_Old(config
             => config.UsingConfiguration(firstCfg)
                 .UsingConfiguration(expectedCfg));
 
@@ -279,7 +279,7 @@ public class ServiceCollectionExtensions_Should {
         var services = CreateServices(mock);
 
         // Act
-        services.ApplyRegistries(config
+        services.ApplyRegistries_Old(config
             => config.FromAssemblies(registry.GetType().Assembly)
                 .From(registry));
 
@@ -312,7 +312,7 @@ public class ServiceCollectionExtensions_Should {
         configBuilder.AddInMemoryCollection(configuredAdditions.Select((t, i) => KeyValuePair.Create($"{configKey}:{i}", t.FullName)));
 
         // Act
-        services.ApplyRegistries(config
+        services.ApplyRegistries_Old(config
             => config.From(regInstance).OfTypes(regType)
             .UsingConfiguration(configBuilder.Build()));
 
@@ -338,7 +338,7 @@ public class ServiceCollectionExtensions_Should {
         });
 
         // Act
-        services.ApplyRegistries(config
+        services.ApplyRegistries_Old(config
             => config.UsingConfiguration(configBuilder.Build()).WithConfigurationsFromSection(key));
 
         // Assert
@@ -365,7 +365,7 @@ public class ServiceCollectionExtensions_Should {
         configBuilder.AddInMemoryCollection(configuredAdditions.SelectMany((name, i) => new[] { KeyValuePair.Create($"{configKey}:{i}", (string?)name) }));
 
         // Act
-        var action = () => services.ApplyRegistries(config => config.UsingConfiguration(configBuilder.Build()));
+        var action = () => services.ApplyRegistries_Old(config => config.UsingConfiguration(configBuilder.Build()));
 
         // Assert
         action.Should().Throw<RegistryConfigurationException>()
@@ -396,7 +396,7 @@ public class ServiceCollectionExtensions_Should {
                 })));
 
         // Act
-        var action = () => services.ApplyRegistries(config => config.UsingConfiguration(configBuilder.Build()));
+        var action = () => services.ApplyRegistries_Old(config => config.UsingConfiguration(configBuilder.Build()));
 
         // Assert
         action.Should().NotThrow();
@@ -430,7 +430,7 @@ public class ServiceCollectionExtensions_Should {
         configBuilder.AddInMemoryCollection(configuredRemovals.Select((t, i) => KeyValuePair.Create($"{configKey}:{i}", t.FullName?.ToLower())));
 
         // Act
-        services.ApplyRegistries(config => {
+        services.ApplyRegistries_Old(config => {
             config.From(regInstance)
                 .OfTypes(regType1, regType2)
                 .UsingConfiguration(configBuilder.Build());
@@ -485,10 +485,10 @@ public class ServiceCollectionExtensions_Should {
         public Dependencies() {
             Runner = new();
 
-            SetupApplyRegistries(null);
+            SetupApplyRegistries_Old(null);
         }
 
-        public void SetupApplyRegistries(Action<IServiceCollection, RegistryOptions>? callback)
+        public void SetupApplyRegistries_Old(Action<IServiceCollection, RegistryOptions>? callback)
             => Runner.Setup(m => m.ApplyRegistries(It.IsAny<IServiceCollection>(), It.IsAny<RegistryOptions>()))
                 .Callback<IServiceCollection, RegistryOptions>((svc, options) => {
                     OptionsApplied = options;
