@@ -7,8 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../RegistryServices/RegistryServices.csproj" />
     <ProjectReference Include="..\..\..\src\ServiceRegistryModules.Core\ServiceRegistryModules.Core.csproj" />
     <ProjectReference Include="..\TestSamples1\TestSamples1.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.3" />
   </ItemGroup>
 
 </Project>

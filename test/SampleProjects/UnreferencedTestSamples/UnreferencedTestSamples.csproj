@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../RegistryServices/RegistryServices.csproj" />
     <ProjectReference Include="..\..\..\src\ServiceRegistryModules.Abstractions\ServiceRegistryModules.Abstractions.csproj" />
   </ItemGroup>
 
