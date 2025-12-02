@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using ServiceRegistryModules.Exceptions;
 
 namespace ServiceRegistryModules;
+// TODO: See comment on ServiceCollectionExtensions about using interceptors to get the calling assembly.
 public static class WebApplicationBuilderExtensions {
     /// <summary>
     /// Applies the <see cref="IRegistryModule"/>s from the given assemblies.

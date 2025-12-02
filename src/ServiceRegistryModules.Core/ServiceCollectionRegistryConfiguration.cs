@@ -12,7 +12,8 @@ using ServiceRegistryModules.Exceptions;
 using ServiceRegistryModules.Internal;
 
 namespace ServiceRegistryModules;
-
+// TODO: There's a lot of reflection going on here (getting types in an assembly, dynamic assembly loading, etc).
+//       Consier how we could use a source generator instead (try and do it without interceptors if possible).
 public class FullServiceCollectionRegistryConfiguration : ServiceCollectionRegistryConfiguration {
     
     internal FullServiceCollectionRegistryConfiguration() { }

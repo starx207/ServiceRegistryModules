@@ -5,6 +5,9 @@ using System.Reflection;
 using ServiceRegistryModules.Exceptions;
 
 namespace ServiceRegistryModules.Internal;
+// TODO: Here we could have a source generator that could generate code that would create a registry based on the available providers.
+//       This would avoid using reflection to inspect the available ctors at runtime (we only deal with public constructors, so the generated could would not have to be a partial class).
+//       However, we CAN currently instantiate non-public registries, so we would have to figure out how we handle that.
 internal class RegistryActivator : IRegistryActivator {
     public IEnumerable<IRegistryModule> InstantiateRegistries(RegistryOptions options) {
         var typesToCreate = options.RegistryTypes.AsEnumerable();

@@ -8,6 +8,7 @@ using ServiceRegistryModules.Exceptions;
 using ServiceRegistryModules.Internal;
 
 namespace ServiceRegistryModules;
+// TODO: Maybe we could use interceptors to get the calling assembly here instead of using reflection for GetCallingAssembly?
 public static class ServiceCollectionExtensions {
     /// <summary>
     /// Applies the <see cref="IRegistryModule"/>s from the given assemblies.

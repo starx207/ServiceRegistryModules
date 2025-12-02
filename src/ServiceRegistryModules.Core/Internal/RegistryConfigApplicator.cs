@@ -10,6 +10,19 @@ using System.Reflection;
 using ServiceRegistryModules.Exceptions;
 
 namespace ServiceRegistryModules.Internal;
+// TODO: We could source-generate code that will take the configuration and apply it to the various registries.
+//       Think through how this would go. In order to configure "Private" members, we'd need to source generate a partial class for the registry.
+//       However, that would mean the source generator would need to run anywhere the abstractions are used.
+//
+//       Another problem is the code we generate will need to be based on the configured options (public only, which assemblies we're looking at, etc.).
+//       Therefore, we'd need to base the generated code off of the registry declaration AND the configuration (often in separate projects).
+//       How would we handle that?
+//       Perhaps the generated code would need to handle all possible option sets?
+//
+//       Furthermore, some configuration options I've added would not be possible with AOT compilation (like dynamically loading additional assemblies with the HintPath).
+//       The source generator would need to look at whether AOT is enabled and adjust the generated code accordingly.
+//       When AOT enabled, no reflection-based code would be generated. When AOT disabled, we'd need to generate reflection-based code for the configuration
+//       that can't be handled at compile time.
 internal class RegistryConfigApplicator : IRegistryConfigApplicator {
     private RegistryConfiguration? _registryConfig;
     private bool _publicOnly;
